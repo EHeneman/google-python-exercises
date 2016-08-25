@@ -8,8 +8,7 @@
 
 # Problem description:
 # https://developers.google.com/edu/python/exercises/copy-special
-
-
+import commands
 import sys
 import re
 import os
@@ -23,7 +22,36 @@ import subprocess
 
 # +++your code here+++
 # Write functions and modify main() to call them
+def list_all(dest_dir, todir='', tozip='', zipfilename='tmp.zip'):
 
+    list_files_found = list()
+    for dirname, dirnames, filenames in os.walk(dest_dir):
+        for filename in filenames:
+            match = re.search(r'(.*?)(__)(.*)(__)(.*?)', filename)
+            if match:
+                list_files_found.append(os.path.join(dirname, filename))
+
+    if todir:
+        create_dir(todir)
+        for file_found in list_files_found:
+            shutil.copy(file_found, todir)
+    elif tozip:
+        create_dir(tozip)
+        file_names = ' '.join(list_files_found)
+        external_command = "zip -j {0} {1}".format(zipfilename, file_names)
+        print("Command I'm going to do: {0}").format(external_command)
+        (status, output) = commands.getstatusoutput(external_command)
+        if status:
+            sys.stderr.write(output)
+            sys.exit(1)
+        print output
+    else:
+        for file_found in list_files_found:
+            print file_found
+
+def create_dir(dirname):
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
 
 def main():
     # This basic command line argument parsing code is provided.
@@ -52,10 +80,11 @@ def main():
     if len(args) == 0:
         print("error: must specify one or more dirs")
         sys.exit(1)
-
+    else:
         # +++your code here+++
         # Call your functions
-
+        dest_dir = args[0]
+        list_all(dest_dir, todir, tozip)
 
 if __name__ == "__main__":
     main()
