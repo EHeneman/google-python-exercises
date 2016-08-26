@@ -25,23 +25,29 @@ def read_urls(filename):
     Screens out duplicate urls and returns the urls sorted into
     increasing order."""
     # +++your code here+++
-    # regex = r"[A-z]{1,2}[0-9R][0-9A-Z]? [0-9][ABD-HJLNP-UW-Z]{2}"
-    # puzzle_url = re.findall(r'GET(.*?)HTTP', line)
     with open(filename) as f:
         lines = f.readlines()
         protocol = r'http://'
-        hostname = filename.split('_')[1]
-        print hostname
+        puzzle, hostname = filename.split('_')
 
-        urls = set()
+        full_urls_set = set()
         for line in lines:
-            match = re.search(r'\S+(puzzle*).\S+',line)
+            match = re.search(r'\S+(puzzle*).\S+', line)
             if match:
                 url = match.group()
                 full_url = '{0}{1}{2}'.format(protocol, hostname, url)
-                urls.add(full_url)
+                if puzzle == 'place':
+                    start = full_url.find('puzzle') + len('puzzle') + 1
+                    url_path, url_extension = os.path.splitext(full_url)
+                    url_name = url_path[start:]
+                    trash, prefix, suffix = url_name.split('-')
+                    full_urls_set.add((full_url, suffix))
+                    urls = [url for (url, suffix) in sorted(full_urls_set, key=lambda t: t[1])]
+                else:
+                    full_urls_set.add(full_url)
+                    urls = sorted(full_urls_set)
 
-    return sorted(urls)
+    return urls
 
 def download_images(img_urls, dest_dir):
     """Given the urls already in the correct order, downloads
@@ -64,7 +70,7 @@ def download_images(img_urls, dest_dir):
         img_html = "<img src='{0}'>".format(dest_dir_img)
         index_img.append(img_html)
 
-        print('Retrieving... {0}'.format(img_id))
+        print('Retrieving... {0}: {1}'.format(img_id, img_url))
         urllib.urlretrieve(img_url, dest_dir_img)
 
     index = index_html.replace('[IMG]', ''.join(index_img))

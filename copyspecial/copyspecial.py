@@ -36,9 +36,9 @@ def list_all(dest_dir, todir='', tozip='', zipfilename='tmp.zip'):
         for file_found in list_files_found:
             shutil.copy(file_found, todir)
     elif tozip:
-        create_dir(tozip)
+        #create_dir(tozip)
         file_names = ' '.join(list_files_found)
-        external_command = "zip -j {0} {1}".format(zipfilename, file_names)
+        external_command = "zip -j {0} {1}".format(tozip, file_names)
         print("Command I'm going to do: {0}").format(external_command)
         (status, output) = commands.getstatusoutput(external_command)
         if status:
@@ -47,7 +47,7 @@ def list_all(dest_dir, todir='', tozip='', zipfilename='tmp.zip'):
         print output
     else:
         for file_found in list_files_found:
-            print file_found
+            print(file_found)
 
 def create_dir(dirname):
     if not os.path.exists(dirname):
