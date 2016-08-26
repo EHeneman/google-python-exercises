@@ -9,6 +9,7 @@
 import sys
 import re
 from BeautifulSoup import BeautifulSoup
+from collections import defaultdict
 
 """Baby Names exercise
 
@@ -36,7 +37,7 @@ Suggested milestones for incremental development:
 """
 
 
-def extract_names(filename):
+def extract_names(filename, debug=False):
     """
     Given a file name for baby.html, returns a list starting with the year string
     followed by the name-rank strings in alphabetical order.
@@ -44,28 +45,27 @@ def extract_names(filename):
     """
     # +++your code here+++
     with open(filename, 'r') as f:
-
         doc = BeautifulSoup(f)
-
         title = doc.findChildren('h3')
+        year_dict = defaultdict(list)
+        for tables in doc.findChildren('table'):
+            for subtable in tables.findChildren('table'):
+                year = re.findall('\d+', title[0].string) if title else 'Unknown'
+                rows = subtable.findChildren(['th', 'tr'])
+                for row in rows:
+                    cells = row.findChildren('td')
+                    if len(cells) == 3:
+                        rank = cells[0].string
+                        boy_name = cells[1].string
+                        girl_name = cells[2].string
+                        year_dict[boy_name].append(rank)
+                        year_dict[girl_name].append(rank)
 
-        tables = doc.findChildren('table')
+    year = re.findall('\d+', title[0].string) if title else 'Unknown Year'
+    year_list = ['{0} {1}'.format(baby_name, min(baby_rank)) for baby_name, baby_rank in year_dict.iteritems()]
+    year_list.insert(0, year[0])
 
-        for table in tables:
-
-            rows = table.findChildren(['th', 'tr'])
-
-            for row in rows:
-
-                cells = row.findChildren('td')
-
-                if len(cells) == 3:
-
-                    rank = cells[0].string
-                    boy_name = cells[1].string
-                    girl_name = cells[2].string
-
-                    print "The value in this cell is Rank: {0}. Boy Name: {1}, Girl Name: {2}".format(rank, boy_name, girl_name)
+    return sorted(year_list)
 
 def main():
     # This command-line parsing code is provided.
@@ -87,7 +87,14 @@ def main():
         # For each filename, get the names, then either print the text output
         # or write it to a summary file
         for filename in args:
-            extract_names(filename)
+            babynames_list = extract_names(filename)
+            text = '\n'.join(babynames_list) + '\n'
+            if summary:
+                summary_file = '{0}.{1}'.format(filename, 'summary')
+                with open(summary_file, 'w') as f:
+                    f.writelines(text)
+            else:
+                print(text)
 
 if __name__ == '__main__':
     main()
