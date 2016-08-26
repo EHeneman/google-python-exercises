@@ -44,7 +44,7 @@ def list_all(dest_dir, todir='', tozip='', zipfilename='tmp.zip'):
         if status:
             sys.stderr.write(output)
             sys.exit(1)
-        print output
+        print(output)
     else:
         for file_found in list_files_found:
             print(file_found)

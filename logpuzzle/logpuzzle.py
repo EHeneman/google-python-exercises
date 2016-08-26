@@ -42,10 +42,14 @@ def read_urls(filename):
                     url_name = url_path[start:]
                     trash, prefix, suffix = url_name.split('-')
                     full_urls_set.add((full_url, suffix))
-                    urls = [url for (url, suffix) in sorted(full_urls_set, key=lambda t: t[1])]
+
                 else:
                     full_urls_set.add(full_url)
-                    urls = sorted(full_urls_set)
+
+        if puzzle == 'place':
+            urls = [url for (url, suffix) in sorted(full_urls_set, key=lambda t: t[1])]
+        else:
+            urls = sorted(full_urls_set)
 
     return urls
 
