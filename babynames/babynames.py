@@ -50,7 +50,6 @@ def extract_names(filename, debug=False):
         year_dict = defaultdict(list)
         for tables in doc.findChildren('table'):
             for subtable in tables.findChildren('table'):
-                year = re.findall('\d+', title[0].string) if title else 'Unknown'
                 rows = subtable.findChildren(['th', 'tr'])
                 for row in rows:
                     cells = row.findChildren('td')

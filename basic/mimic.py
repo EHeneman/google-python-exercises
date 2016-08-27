@@ -52,20 +52,8 @@ def mimic_dict(filename):
     with open(filename, 'r') as f:
         lines = f.readlines()
         words = [word for line in lines for word in line.split(' ')]
-        d = {}
         for i, word in enumerate(words):
-            #key = (i, word)
             d[word] = words[i+1:]
-        #words = set()
-        #for line in f:
-        #    for word in line.split():
-        #        words.add(word)
-        #lines = f.readlines()
-        #words = {word for line in lines for word in line.split()}
-        #keys = map(lambda word: word.translate(None, "(){}<>"), words)
-        #d = dict.fromkeys(keys, None)
-        # ''.join(c for c in word if c not in '(){}<>'
-
     return d
 
 def print_mimic(mimic_dict, word):
